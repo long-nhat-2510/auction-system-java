@@ -76,7 +76,7 @@ public class AuctionItem extends AuctionEntity {
     @Override
     public String toString() {
         return "Item{" +
-                "id=" + id +
+                "id=" + this.getId() +
                 ", name='" + name + '\'' +
                 ", price=" + currentPrice +
                 ", winner='" + currentWinner + '\'' +

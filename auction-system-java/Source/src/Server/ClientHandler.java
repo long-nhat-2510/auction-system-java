@@ -66,7 +66,7 @@ public class ClientHandler implements Runnable {
                         return;
                     }
                     // Kiểm tra xem đã Login chưa trước khi cho Bid
-                    if (this.clientName.equals("Anonymous")) {
+                    if ("Anonymous".equals(this.clientName)) { //tránh lỗi nếu this.clientName = null
                         sendMessage("ERROR|Bạn cần đăng nhập trước khi đấu giá!");
                         return;
                     }
@@ -104,6 +104,7 @@ public class ClientHandler implements Runnable {
     private void closeConnection(){
         try{
             server.removeClient(this);
+            server.broadcast("USER_DISCONNECTED|" + clientName);
             if (in!=null){
                 in.close();
             }
