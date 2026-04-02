@@ -5,12 +5,8 @@ import CommonClasses.BidRecord;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class AuctionServer {
     private static volatile AuctionServer instance;
@@ -21,6 +17,8 @@ public class AuctionServer {
     private final List<CommonClasses.BidRecord> bidHistory = new CopyOnWriteArrayList<>();
     //bộ đếm giờ hệ thống
     private final ScheduledExecutorService timerService = Executors.newScheduledThreadPool(1);
+    // ds lưu nguời đang onl
+    private final Map<String, ConnectedClient> onlineUsers = new ConcurrentHashMap<>();
 
     //constructor
     private AuctionServer(){ //ngăn khởi tạo tự do
@@ -119,6 +117,15 @@ public class AuctionServer {
     public void removeClient(ClientHandler client){
         clients.remove(client);
         System.out.println("[Server] Client disconnected. Total: " + clients.size());
+    }
+
+    public void registerUser(ConnectedClient client){
+        onlineUsers.put(client.getUsername(), client);
+        System.out.println("[Server]" + client);
+    }
+
+    public void unregisterUser(String username) {
+        onlineUsers.remove(username);
     }
 
 

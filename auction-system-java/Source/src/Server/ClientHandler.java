@@ -56,6 +56,12 @@ public class ClientHandler implements Runnable {
                         return;
                     }
                     this.clientName = parts[1];
+                    String ip = socket.getInetAddress().toString();
+
+                    // tạo hồ sơ khách hàng
+                    ConnectedClient infor = new ConnectedClient(this.clientName, ip, "BIDDER");
+                    //lưu vào ds quản lý cuar server
+                    server.registerUser(infor);
                     sendMessage("LOGIN_SUCCESS|Welcome " + clientName);
                     break;
 
