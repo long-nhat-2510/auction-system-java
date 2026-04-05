@@ -1,4 +1,2 @@
-package Payload;
-
-public class AuctionSummary {
-}
+package payload;
+public class AuctionSummary {}
