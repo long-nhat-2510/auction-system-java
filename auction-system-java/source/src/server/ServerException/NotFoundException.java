@@ -1,4 +1,4 @@
-package Server.ServerException;
+package server.ServerException;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

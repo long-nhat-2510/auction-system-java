@@ -1,4 +1,4 @@
-package Payload;
+package payload;
 
 public class ErrorResponse {
 }

@@ -1,4 +1,4 @@
-package Server.AuctionException;
+package server.AuctionException;
 
 public class HighBidException extends RuntimeException {
     public HighBidException(String message) {

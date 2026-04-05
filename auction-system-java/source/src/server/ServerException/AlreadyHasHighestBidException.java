@@ -1,4 +1,4 @@
-package Server.ServerException;
+package server.ServerException;
 
 public class AlreadyHasHighestBidException extends RuntimeException {
     public AlreadyHasHighestBidException(String message) {

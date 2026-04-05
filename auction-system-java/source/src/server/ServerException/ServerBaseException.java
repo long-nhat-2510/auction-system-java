@@ -1,4 +1,4 @@
-package Server.ServerException;
+package server.ServerException;
 
 public class ServerBaseException extends RuntimeException {
     public ServerBaseException(String message) {
