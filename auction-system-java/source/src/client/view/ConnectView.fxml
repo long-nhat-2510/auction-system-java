@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="560" prefWidth="420" style="-fx-background-color: #1A237E;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ConnectController">
+
+    <!-- Background -->
+    <VBox alignment="TOP_CENTER" style="-fx-padding: 0;">
+        <Region prefHeight="200" style="-fx-background-color: #283593; -fx-background-radius: 0 0 60% 60%;" />
+    </VBox>
+
+    <!-- Card chính -->
+    <VBox alignment="CENTER" spacing="0" style="-fx-padding: 40 40 32 40;">
+
+        <Label style="-fx-font-size: 52px;" text="\$" textFill="#00ff04" />
+        <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;" text="AuctionLive" />
+        <Label style="-fx-font-size: 13px; -fx-text-fill: #9FA8DA;" text="Hệ thống đấu giá trực tuyến" />
+
+        <!-- Card form -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 14; -fx-padding: 28;">
+            <VBox.margin><Insets top="30" /></VBox.margin>
+
+            <!-- Server IP + Port -->
+            <HBox spacing="10">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Địa chỉ Server" />
+                    <TextField fx:id="ipField" />
+                </VBox>
+                <VBox prefWidth="90" spacing="5">
+                    <Label text="Port" />
+                    <TextField fx:id="portField" />
+                </VBox>
+            </HBox>
+
+            <!-- Username -->
+            <VBox spacing="5">
+                <Label text="Tên người dùng" />
+                <TextField fx:id="usernameField" promptText="Nhập tên của bạn..." />
+            </VBox>
+
+            <!-- PASSWORD  -->
+            <VBox spacing="5">
+                <Label text="Mật khẩu" />
+                <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu..." />
+            </VBox>
+
+            <!-- Error -->
+            <Label fx:id="errorLabel" text="" visible="false" />
+
+            <!--LOGIN -->
+            <Button fx:id="btnLogin"
+                    onAction="#handleLogin"
+                    text="Đăng nhập"
+                    maxWidth="Infinity"/>
+
+            <HBox fx:id="loadingBox" alignment="CENTER" spacing="8" visible="false">
+                <ProgressIndicator prefHeight="18" prefWidth="18" />
+                <Label text="Đang kết nối..." />
+            </HBox>
+
+            <Separator />
+
+            <!--  REGISTER -->
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Chưa có tài khoản?" />
+                <Hyperlink text="Đăng ký ngay!"
+                           fx:id="registerLink"
+                           onAction="#handleRegister"/>
+            </HBox>
+
+        </VBox>
+
+        <Label text="v1.0.0 — Nhóm Auction Java" />
+    </VBox>
+
+</StackPane>
