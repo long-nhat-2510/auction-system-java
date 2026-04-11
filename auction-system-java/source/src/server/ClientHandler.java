@@ -5,7 +5,6 @@ import packets.RequestType;
 import payload.AuctionIdRequest;
 import CommonClasses.AuctionEntity;
 
-
 import java.io.*;
 import java.net.Socket;
 
@@ -17,11 +16,10 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket socket) {
         this.socket = socket;
         try {
-            // Khởi tạo luồng đọc/ghi dữ liệu với Client này
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("❌ Lỗi luồng I/O khi Client kết nối.");
         }
     }
 
@@ -32,7 +30,6 @@ public class ClientHandler implements Runnable {
             // Liên tục lắng nghe tin nhắn từ Client gửi lên
             while ((jsonReceived = in.readLine()) != null) {
 
-                // Dịch chuỗi JSON thành đối tượng NetworkMessage
                 NetworkMessage msg = NetworkMessage.fromJson(jsonReceived);
                 if (msg == null) continue;
 
@@ -42,82 +39,70 @@ public class ClientHandler implements Runnable {
                         payload.PlaceBidRequest bidReq = msg.getDataAs(payload.PlaceBidRequest.class);
 
                         if (bidReq == null) {
-                            System.out.println("❌ Payload lỗi!");
+                            sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "Dữ liệu gói tin bị lỗi!"));
                             break;
                         }
 
-                        AuctionEntity auction = ServerLauncher.auctions.get(bidReq.getAuctionId());
+                        AuctionEntity auction = AuctionServer.auctions.get(bidReq.getAuctionId());
 
                         if (auction == null) {
-                            sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "Auction không tồn tại"));
+                            sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "Phiên đấu giá không tồn tại!"));
                             break;
                         }
 
-                        boolean success = auction.placeBid(
-                                bidReq.getBidderName(),
-                                bidReq.getBidAmount()
-                        );
+                        // Thực hiện logic đặt giá
+                        boolean success = auction.placeBid(bidReq.getBidderName(), bidReq.getBidAmount());
 
                         if (success) {
-                            System.out.println("🔥 " + bidReq.getBidderName() +
-                                    " đặt giá: " + bidReq.getBidAmount());
+                            System.out.println("🔥 " + bidReq.getBidderName() + " đặt giá: " + bidReq.getBidAmount());
 
-                            payload.AuctionUpdateEvent updateEvent =
-                                    new payload.AuctionUpdateEvent(
-                                            auction.getAuctionId(),
-                                            auction.getCurrentPrice(),
-                                            auction.getHighestBidder()
-                                    );
+                            payload.AuctionUpdateEvent updateEvent = new payload.AuctionUpdateEvent(
+                                    auction.getAuctionId(),
+                                    auction.getCurrentPrice(),
+                                    auction.getHighestBidder()
+                            );
 
-                            NetworkMessage updateMsg =
-                                    new NetworkMessage(RequestType.AUCTION_UPDATE_EVENT, updateEvent);
-
-                            ServerLauncher.broadcast(updateMsg);
-
+                            // Bắn thông báo cập nhật giá cho TẤT CẢ mọi người trong phòng
+                            AuctionServer.broadcast(new NetworkMessage(RequestType.AUCTION_UPDATE_EVENT, updateEvent));
                         } else {
-                            sendMessage(new NetworkMessage(
-                                    RequestType.ERROR_RESPONSE,
-                                    "❌ Giá phải cao hơn giá hiện tại hoặc auction đã đóng"
-                            ));
+                            sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "❌ Giá phải cao hơn giá hiện tại hoặc phiên đã đóng!"));
                         }
                         break;
 
                     case REGISTER_CLIENT_REQUEST:
-                        System.out.println("Có người muốn đăng ký vào phòng!");
+                        System.out.println("📝 Có người muốn đăng ký vào phòng!");
+                        // TODO: Lấy payload Username/Password ra và xử lý
                         break;
-                    case UNREGISTER_CLIENT_REQUEST:
-                        //
-                        break;
-                    case CREATE_AUCTION_REQUEST:
-                        //
-                        break;
-                    case CANCEL_AUCTION_REQUEST:
-                        //
-                        break;
-                    case FINISH_AUCTION_REQUEST:
-                        //
-                        break;
-                    case HIGHEST_BID_REQUEST:
-                        //
-                        break;
+
                     case AUCTION_ID_REQUEST:
-                        System.out.println("Receive Id request");
+                        System.out.println("🔍 Nhận yêu cầu tìm kiếm ID");
                         AuctionIdRequest request = msg.getDataAs(AuctionIdRequest.class);
                         int id = request.getAuctionId();
-                        System.out.println("Auction Id: " + id);
-                        //Gửi phản hồi về client
+                        System.out.println("Auction Id cần tìm: " + id);
+
                         NetworkMessage response = new NetworkMessage(RequestType.AUCTION_DATA_RESPONSE, "Server received id: " + id);
                         sendMessage(response);
                         break;
 
+                    // Các case khác chưa xử lý...
+                    case UNREGISTER_CLIENT_REQUEST:
+                    case CREATE_AUCTION_REQUEST:
+                    case CANCEL_AUCTION_REQUEST:
+                    case FINISH_AUCTION_REQUEST:
+                    case HIGHEST_BID_REQUEST:
+                        System.out.println("Tính năng " + msg.getAction() + " đang được xây dựng.");
+                        break;
 
                     default:
-                        System.out.println("Hành động chưa được hỗ trợ: " + msg.getAction());
+                        System.out.println("⚠️ Hành động chưa được hỗ trợ: " + msg.getAction());
                 }
             }
         } catch (IOException e) {
-            System.out.println("Client đã ngắt kết nối.");
+            // Khi Client tắt cửa sổ hoặc mất mạng, hàm readLine() sẽ ném ra Exception nhảy vào đây
+            System.out.println("⚠️ Client " + socket.getInetAddress() + " đã ngắt kết nối đột ngột.");
         } finally {
+            // QUAN TRỌNG: Dọn dẹp bộ nhớ và xóa Client khỏi danh sách
+            AuctionServer.removeClient(this);
             closeEverything();
         }
     }
