@@ -1,7 +1,7 @@
 package CommonClasses;
 
 public class BidRecord {
-    private String bidId;
+        private String bidId;
     private int auctionId;     // ✅ đổi sang int
     private String bidder;
     private double amount;
