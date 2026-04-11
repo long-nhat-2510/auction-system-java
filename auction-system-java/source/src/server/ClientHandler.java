@@ -43,7 +43,7 @@ public class ClientHandler implements Runnable {
                             break;
                         }
 
-                        AuctionEntity auction = ServerLauncher.auctions.get(bidReq.getAuctionId());
+                        AuctionEntity auction = AuctionServer.auctions.get(bidReq.getAuctionId());
 
                         if (auction == null) {
                             sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "Phiên đấu giá không tồn tại!"));
@@ -63,7 +63,7 @@ public class ClientHandler implements Runnable {
                             );
 
                             // Bắn thông báo cập nhật giá cho TẤT CẢ mọi người trong phòng
-                            ServerLauncher.broadcast(new NetworkMessage(RequestType.AUCTION_UPDATE_EVENT, updateEvent));
+                            AuctionServer.broadcast(new NetworkMessage(RequestType.AUCTION_UPDATE_EVENT, updateEvent));
                         } else {
                             sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "❌ Giá phải cao hơn giá hiện tại hoặc phiên đã đóng!"));
                         }
@@ -102,7 +102,7 @@ public class ClientHandler implements Runnable {
             System.out.println("⚠️ Client " + socket.getInetAddress() + " đã ngắt kết nối đột ngột.");
         } finally {
             // QUAN TRỌNG: Dọn dẹp bộ nhớ và xóa Client khỏi danh sách
-            ServerLauncher.removeClient(this);
+            AuctionServer.removeClient(this);
             closeEverything();
         }
     }
