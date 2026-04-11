@@ -14,7 +14,7 @@ public class AuctionTimer implements Runnable {
                 Thread.sleep(1000); // Ngủ 1 giây
                 long currentTime = System.currentTimeMillis();
 
-                for (Map.Entry<Integer, AuctionEntity> entry : ServerLauncher.auctions.entrySet()) {
+                for (Map.Entry<Integer, AuctionEntity> entry : AuctionServer.auctions.entrySet()) {
                     AuctionEntity auction = entry.getValue();
 
                     if (auction.isActive()) {
@@ -34,7 +34,7 @@ public class AuctionTimer implements Runnable {
 
                             payload.CountdownTickEvent tickEvent = new payload.CountdownTickEvent(auction.getAuctionId(), secondsLeft);
                             NetworkMessage msg = new NetworkMessage(RequestType.COUNTDOWN_TICK_EVENT, tickEvent);
-                            ServerLauncher.broadcast(msg);
+                            AuctionServer.broadcast(msg);
                         }
                     }
                 }
