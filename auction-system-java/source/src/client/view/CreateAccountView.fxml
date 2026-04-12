@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<StackPane stylesheets="@../css/create-account.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.CreateAccountController">
+
+    <!-- Background gradient -->
+    <VBox alignment="CENTER" styleClass="root-bg">
+
+        <!-- Card container -->
+        <VBox maxWidth="360" minWidth="340" styleClass="card">
+
+            <!-- Title -->
+            <Label styleClass="title-label" text="Tạo tài khoản mới" />
+
+            <!-- Họ và Tên -->
+            <Label styleClass="field-label" text="user name" />
+            <TextField fx:id="fullNameField" promptText="nhập user name" styleClass="input-field" />
+            <Label fx:id="fullNameError" managed="false" styleClass="error-label" visible="false" />
+
+            <!-- Email -->
+            <Label styleClass="field-label" text="Email" />
+            <TextField fx:id="emailField" promptText="example@email.com" styleClass="input-field" />
+            <Label fx:id="emailError" managed="false" styleClass="error-label" visible="false" />
+
+            <!-- Phone -->
+            <Label styleClass="field-label" text="Số điện thoại (Tùy chọn)" />
+            <TextField fx:id="phoneField" promptText="0987654321" styleClass="input-field" />
+
+            <!-- Password -->
+            <Label styleClass="field-label" text="Mật khẩu" />
+            <StackPane>
+                <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" styleClass="input-field" />
+                <Button fx:id="togglePasswordBtn" onAction="#onTogglePassword" styleClass="toggle-btn" text="👁" StackPane.alignment="CENTER_RIGHT" />
+            </StackPane>
+
+            <!-- Password strength bar -->
+            <HBox fx:id="strengthBarBox" managed="false" spacing="4" visible="false">
+                <Rectangle fx:id="bar1" arcHeight="4" arcWidth="4" height="4" styleClass="strength-bar" width="75" />
+                <Rectangle fx:id="bar2" arcHeight="4" arcWidth="4" height="4" styleClass="strength-bar" width="75" />
+                <Rectangle fx:id="bar3" arcHeight="4" arcWidth="4" height="4" styleClass="strength-bar" width="75" />
+                <Rectangle fx:id="bar4" arcHeight="4" arcWidth="4" height="4" styleClass="strength-bar" width="75" />
+            </HBox>
+            <Label fx:id="strengthLabel" managed="false" styleClass="strength-label" visible="false" />
+            <Label fx:id="passwordError" managed="false" styleClass="error-label" visible="false" />
+
+            <!-- Confirm Password -->
+            <Label styleClass="field-label" text="Xác nhận mật khẩu" />
+            <Label fx:id="confirmPasswordError" managed="false" styleClass="error-label" visible="false" />
+            <StackPane>
+                <children>
+                    <PasswordField fx:id="passwordField1" promptText="Nhập lại mật khẩu" styleClass="input-field" />
+                    <Button fx:id="togglePasswordBtn1" onAction="#onTogglePassword" styleClass="toggle-btn" text="👁" StackPane.alignment="CENTER_RIGHT" />
+                </children>
+            </StackPane>
+
+            <!-- Terms checkbox -->
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <CheckBox fx:id="termsCheckBox" styleClass="terms-checkbox" />
+                <TextFlow>
+                    <Text styleClass="terms-text" text="Tôi đồng ý với " />
+                    <Hyperlink onAction="#onTermsClick" styleClass="terms-link" text="Điều khoản dịch vụ" />
+                    <Text styleClass="terms-text" text=" và " />
+                    <Hyperlink onAction="#onPrivacyClick" styleClass="terms-link" text="Chính sách bảo mật" />
+                </TextFlow>
+            </HBox>
+            <Label fx:id="termsError" managed="false" styleClass="error-label" visible="false" />
+
+            <!-- Register button -->
+            <Button fx:id="registerBtn" defaultButton="true" maxWidth="Infinity" onAction="#onRegister" styleClass="register-btn" text="ĐĂNG KÝ NGAY" />
+
+            <!-- Loading indicator -->
+            <ProgressIndicator fx:id="loadingIndicator" managed="false" prefHeight="32" prefWidth="32" styleClass="progress-indicator" visible="false" />
+
+            <!-- Server error -->
+            <Label fx:id="serverErrorLabel" managed="false" styleClass="server-error-label" visible="false" wrapText="true" />
+
+            <!-- Login link -->
+            <HBox alignment="CENTER" spacing="4">
+                <Label styleClass="login-hint" text="Đã có tài khoản?" />
+                <Hyperlink onAction="#onGoToLogin" styleClass="login-link" text="Đăng nhập ngay" />
+            </HBox>
+
+            <VBox.margin>
+                <Insets bottom="24" left="28" right="28" top="24" />
+            </VBox.margin>
+        </VBox>
+
+    </VBox>
+</StackPane>
