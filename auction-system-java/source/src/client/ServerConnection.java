@@ -117,9 +117,11 @@ public class ServerConnection {
                             //        lblCurrentPrice.setText(String.valueOf(updateEvent.getCurrentBid()));
                         });
                         break;
+
                     case REGISTRATION_CONFIRMATION:
                         //
                         break;
+
                     case CANCEL_CONFIRMATION:
                         //
                         break;

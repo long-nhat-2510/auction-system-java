@@ -41,7 +41,7 @@ public class ConnectController {
         errorLabel.setVisible(false);
 
         if (ip.isEmpty() || portStr.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showError("Vui lòng điền đầy đủ IP, Port, Tên đăng nhập và mật khẩu!");
+            showError("Vui lòng điền đầy đủ IP,Port,Name và Password");
             return;
         }
 
@@ -76,7 +76,7 @@ public class ConnectController {
                     ServerConnection.getInstance().sendRequest(msg);
 
                     // 4. Thông báo cho người dùng biết là đang chờ máy chủ duyệt
-                    errorLabel.setText("Đang chờ Server xác thực...");
+                    errorLabel.setText("Đã gửi yêu cầu đăng nhập");
                     errorLabel.setStyle("-fx-text-fill: #007BFF;"); // Màu xanh chờ đợi
                     errorLabel.setVisible(true);
 
