@@ -129,6 +129,43 @@ public class AuctionEntity {
     public LocalDateTime getStartTime() { return startTime; }
     public LocalDateTime getEndTime() { return endTime; }
 
+    //================setter============================
+    public void setAuctionId(String auctionId) {
+        this.auctionId = auctionId;
+    }
+
+    public void setStartingPrice(double startingPrice) {
+        this.startingPrice = startingPrice;
+    }
+
+    public void setHighestBidder(String highestBidder) {
+        this.highestBidder = highestBidder;
+    }
+
+    public void setItem(AuctionItem item) {
+        this.item = item;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public void setStatus(AuctionStatus status) {
+        this.status = status;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setBidHistory(List<BidRecord> bidHistory) {
+        this.bidHistory = bidHistory;
+    }
+
     // ================== DEBUG ==================
 
     @Override

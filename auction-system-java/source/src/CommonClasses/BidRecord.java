@@ -45,4 +45,8 @@ public class BidRecord {
 
         return bidder + " bid " + amount + " at " + formattedTime;
     }
+
+    public LocalDateTime getTimestamp() {
+        return time;
+    }
 }
