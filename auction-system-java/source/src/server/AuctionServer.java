@@ -3,10 +3,13 @@ package server;
 import CommonClasses.AuctionEntity;
 import CommonClasses.AuctionItem;
 import packets.NetworkMessage;
+import server.dao.UserDAO; // BỔ SUNG: Import ông Thủ kho tài khoản
+import server.dao.AuctionDAO;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,22 +17,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import java.time.LocalDateTime;
-
 public class AuctionServer {
 
     // Kho chứa danh sách Client và các Phiên đấu giá
     public static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     public static final Map<String, AuctionEntity> auctions = new ConcurrentHashMap<>();
 
-    // [BẢN NÂNG CẤP]: Sử dụng ThreadPool tự co giãn để quản lý Client thay vì new Thread() bừa bãi
+    // Sử dụng ThreadPool tự co giãn để quản lý Client
     private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+
+    // [KẾT NỐI DATABASE]: Triệu hồi các ông Thủ kho
+    private static final UserDAO userDAO = new UserDAO();
+    // private static final AuctionDAO auctionDAO = new AuctionDAO(); // Mở ra nếu đã có
 
     public void start(int port) {
         System.out.println("🚀 AuctionServer starting on port " + port + "...");
 
-        // 1. Khởi tạo dữ liệu ảo (Sau này chuyển sang lấy từ Database)
-        initMockData();
+        // 1. Tải danh sách phiên đấu giá
+        loadAuctions();
 
         // 2. Bật công tắc đồng hồ đếm ngược
         Thread timerThread = new Thread(new AuctionTimer());
@@ -44,7 +49,7 @@ public class AuctionServer {
                 ClientHandler handler = new ClientHandler(socket);
                 clients.add(handler);
 
-                // Giao việc cho ThreadPool thay vì dùng: new Thread(handler).start();
+                // Giao việc cho ThreadPool
                 threadPool.execute(handler);
             }
         } catch (IOException e) {
@@ -52,8 +57,17 @@ public class AuctionServer {
         }
     }
 
-    // Tách phần tạo dữ liệu ảo ra một hàm riêng cho sạch sẽ
-    private void initMockData() {
+    // Hàm lấy danh sách phiên đấu giá (Chuẩn bị sẵn cho Database)
+    private void loadAuctions() {
+        System.out.println("📦 Đang nạp dữ liệu phiên đấu giá...");
+
+
+        Map<String, AuctionEntity> dbAuctions = auctionDAO.getAllActiveAuctions();
+        auctions.putAll(dbAuctions);
+        System.out.println("✅ Đã tải " + auctions.size() + " phiên đấu giá từ DB.");
+
+
+        // Tạm thời vẫn giữ 1 sản phẩm ảo để test chức năng đấu giá
         AuctionItem item1 = new AuctionItem("A01", "Áo trinh sát đoàn", "Hàng real limited", "Eren Yeager", "Quần áo", 500000);
         AuctionEntity auction1 = new AuctionEntity("1", item1, 600000, LocalDateTime.now(), LocalDateTime.now().plusMinutes(1));
         auctions.put(auction1.getAuctionId(), auction1);
@@ -72,14 +86,11 @@ public class AuctionServer {
         System.out.println("📉 Một Client đã thoát. Tổng số user hiện tại: " + clients.size());
     }
 
-
-    // Hàm xác thực người dùng (Sau này sẽ gọi Database ở đây)
+    // ====================================================================
+    // [KẾT NỐI DATABASE]: HÀM XÁC THỰC NGƯỜI DÙNG CHUẨN REAL
+    // ====================================================================
     public static CommonClasses.User authenticate(String username, String password) {
-        // Tạm thời giả lập Database có 1 tài khoản là admin/123
-        if (username.equals("admin") && password.equals("123")) {
-            // Khởi tạo thẻ Căn cước công dân thật
-            return new CommonClasses.User("USR-01", username, password, CommonClasses.UserRole.ADMIN, null);
-        }
-        return null; // Trả về null nếu sai mật khẩu
+        // AuctionServer không tự làm nữa, giao thẳng cho UserDAO quét MySQL
+        return userDAO.authenticate(username, password);
     }
 }

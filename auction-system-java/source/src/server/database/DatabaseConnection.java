@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     // Biến static duy nhất của lớp (Singleton)
     private static volatile DatabaseConnection instance;
-    private Connection connection;
+    private static Connection connection;
 
     // Thông tin cấu hình (Nên để trong file .properties sau này)
     private String url = "jdbc:mysql://localhost:3306/auction_db";
@@ -39,7 +39,20 @@ public class DatabaseConnection {
         return instance;
     }
 
-    public Connection getConnection() {
+    // Hàm lấy kết nối
+    public static Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                // Tải tài xế phiên dịch
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                // Mở đường ống
+                connection = DriverManager.getConnection(getInstance().url, getInstance().password, getInstance().password);
+                System.out.println("🗄️ Đã kết nối thành công tới Database!");
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("❌ Lỗi kết nối Database: " + e.getMessage());
+        }
         return connection;
     }
+
 }
