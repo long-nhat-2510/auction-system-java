@@ -1,4 +1,4 @@
-package payload;
+package payload.response;
 
 import CommonClasses.AuctionEntity;
 

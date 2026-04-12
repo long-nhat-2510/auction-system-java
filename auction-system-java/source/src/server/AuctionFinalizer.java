@@ -3,8 +3,8 @@ package server;
 import CommonClasses.AuctionEntity;
 import packets.NetworkMessage;
 import packets.RequestType;
-import payload.WinnerNotification;
-import payload.NoWinnerNotification;
+import payload.response.WinnerNotification;
+import payload.response.NoWinnerNotification;
 
 public class AuctionFinalizer {
 

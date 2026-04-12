@@ -1,16 +1,14 @@
-package payload;
-
-import java.time.Instant;
+package payload.response;
 
 public class AuctionUpdateEvent {
 
-    private int auctionId;
+    private String auctionId;
     private double currentBid;
     private String highestBidder;
     private long timeStamp = System.currentTimeMillis();
 
     // Constructor đầy đủ
-    public AuctionUpdateEvent(int auctionId, double currentBid, String highestBidder) {
+    public AuctionUpdateEvent(String auctionId, double currentBid, String highestBidder) {
         this.auctionId = auctionId;
         this.currentBid = currentBid;
         this.highestBidder = highestBidder;
@@ -19,11 +17,11 @@ public class AuctionUpdateEvent {
     }
 
     // Getter và Setter
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
-    public void setAuctionId(int auctionId) {
+    public void setAuctionId(String auctionId) {
         this.auctionId = auctionId;
     }
 

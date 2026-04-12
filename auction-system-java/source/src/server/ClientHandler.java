@@ -2,8 +2,11 @@ package server;
 
 import packets.NetworkMessage;
 import packets.RequestType;
-import payload.AuctionIdRequest;
+import payload.request.AuctionIdRequest;
 import CommonClasses.AuctionEntity;
+import payload.request.PlaceBidRequest;
+import payload.response.AuctionUpdateEvent;
+import CommonClasses.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +15,7 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private CommonClasses.User loggedInUser;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -35,8 +39,35 @@ public class ClientHandler implements Runnable {
 
                 // Xử lý logic dựa trên Enum RequestType
                 switch (msg.getAction()) {
+                    case LOGIN_REQUEST:
+                        // 1. BÓC HỘP: Lấy tờ khai của khách
+                        payload.request.LoginRequest req = msg.getDataAs(payload.request.LoginRequest.class);
+                        System.out.println("🔐 Đang kiểm tra tài khoản: " + req.getName());
+
+                        // 2. NHỜ ÔNG QUẢN LÝ CHECK (Gọi hàm ở AuctionServer)
+                        CommonClasses.User validUser = server.AuctionServer.authenticate(req.getName(), req.getPassword());
+
+                        // 3. ĐÓNG GÓI TRẢ LỜI
+                        if (validUser != null) {
+                            // Lưu lại CCCD vào túi áo của anh bồi bàn này để dùng về sau
+                            this.loggedInUser = validUser;
+
+                            // Tạo gói thành công, nhét kèm cái CCCD (validUser) gửi về cho khách
+                            payload.response.LoginResponse res = new payload.response.LoginResponse(true, "Đăng nhập thành công!", validUser);
+                            sendMessage(new packets.NetworkMessage(packets.RequestType.LOGIN_RESPONSE, res));
+                            System.out.println("✅ Khách hàng " + validUser.getUsername() + " đã vào mạng!");
+
+                        } else {
+                            // Tạo gói thất bại
+                            payload.response.LoginResponse res = new payload.response.LoginResponse(false, "Sai tài khoản hoặc mật khẩu!", null);
+                            sendMessage(new packets.NetworkMessage(packets.RequestType.LOGIN_RESPONSE, res));
+                            System.out.println("❌ " + req.getName() + " đăng nhập thất bại.");
+                        }
+                        break;
+
+
                     case PLACE_BID_REQUEST:
-                        payload.PlaceBidRequest bidReq = msg.getDataAs(payload.PlaceBidRequest.class);
+                        PlaceBidRequest bidReq = msg.getDataAs(PlaceBidRequest.class);
 
                         if (bidReq == null) {
                             sendMessage(new NetworkMessage(RequestType.ERROR_RESPONSE, "Dữ liệu gói tin bị lỗi!"));
@@ -56,7 +87,7 @@ public class ClientHandler implements Runnable {
                         if (success) {
                             System.out.println("🔥 " + bidReq.getBidderName() + " đặt giá: " + bidReq.getBidAmount());
 
-                            payload.AuctionUpdateEvent updateEvent = new payload.AuctionUpdateEvent(
+                            AuctionUpdateEvent updateEvent = new AuctionUpdateEvent(
                                     auction.getAuctionId(),
                                     auction.getCurrentPrice(),
                                     auction.getHighestBidder()

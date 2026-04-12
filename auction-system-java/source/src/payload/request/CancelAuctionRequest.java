@@ -1,4 +1,4 @@
-package payload;
+package payload.request;
 
 public class CancelAuctionRequest {
 

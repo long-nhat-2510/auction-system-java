@@ -1,4 +1,4 @@
-package payload;
+package payload.response;
 
 import java.time.Instant;
 

@@ -1,8 +1,8 @@
-package payload;
+package payload.response;
 
 public class WinnerNotification {
 
-    private int auctionId;
+    private String auctionId;
     private String winnerName;
     private double winningPrice;
 
@@ -11,7 +11,7 @@ public class WinnerNotification {
     }
 
     // Constructor đầy đủ để Server đóng gói dữ liệu
-    public WinnerNotification(int auctionId, String winnerName, double winningPrice) {
+    public WinnerNotification(String auctionId, String winnerName, double winningPrice) {
         this.auctionId = auctionId;
         this.winnerName = winnerName;
         this.winningPrice = winningPrice;
@@ -19,11 +19,11 @@ public class WinnerNotification {
 
     // ================== GETTERS & SETTERS ==================
 
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
-    public void setAuctionId(int auctionId) {
+    public void setAuctionId(String auctionId) {
         this.auctionId = auctionId;
     }
 

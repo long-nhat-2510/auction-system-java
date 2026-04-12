@@ -2,10 +2,11 @@ package CommonClasses;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class AuctionEntity {
 
-    private int auctionId;
+    private String auctionId;
     private AuctionItem item;
 
     private double startingPrice;
@@ -25,7 +26,7 @@ public class AuctionEntity {
     }
 
     // Constructor đầy đủ
-    public AuctionEntity(int auctionId, AuctionItem item,
+    public AuctionEntity(String auctionId, AuctionItem item,
                          double startingPrice,
                          long startTime, long endTime) {
 
@@ -87,7 +88,7 @@ public class AuctionEntity {
 
     // ================== GETTER ==================
 
-    public int getAuctionId() { return auctionId; }
+    public String getAuctionId() { return auctionId; }
     public AuctionItem getItem() { return item; }
     public double getStartingPrice() { return startingPrice; }
     public double getCurrentPrice() { return currentPrice; }

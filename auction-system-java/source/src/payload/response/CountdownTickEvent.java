@@ -1,8 +1,8 @@
-package payload;
+package payload.response;
 
 public class CountdownTickEvent {
 
-    private int auctionId;
+    private String auctionId;
     private int secondsLeft;
 
     // Constructor rỗng (BẮT BUỘC để Gson/Jackson có thể dịch ngược từ JSON)
@@ -10,18 +10,18 @@ public class CountdownTickEvent {
     }
 
     // Constructor đầy đủ để Server đóng gói dữ liệu gửi đi
-    public CountdownTickEvent(int auctionId, int secondsLeft) {
+    public CountdownTickEvent(String auctionId, int secondsLeft) {
         this.auctionId = auctionId;
         this.secondsLeft = secondsLeft;
     }
 
     // ================== GETTERS & SETTERS ==================
 
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
-    public void setAuctionId(int auctionId) {
+    public void setAuctionId(String auctionId) {
         this.auctionId = auctionId;
     }
 

@@ -18,7 +18,7 @@ public class AuctionServer {
 
     // Kho chứa danh sách Client và các Phiên đấu giá
     public static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
-    public static final Map<Integer, AuctionEntity> auctions = new ConcurrentHashMap<>();
+    public static final Map<String, AuctionEntity> auctions = new ConcurrentHashMap<>();
 
     // [BẢN NÂNG CẤP]: Sử dụng ThreadPool tự co giãn để quản lý Client thay vì new Thread() bừa bãi
     private static final ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -53,7 +53,7 @@ public class AuctionServer {
     // Tách phần tạo dữ liệu ảo ra một hàm riêng cho sạch sẽ
     private void initMockData() {
         AuctionItem item1 = new AuctionItem("A01", "Áo trinh sát đoàn", "Hàng real limited", "Eren Yeager", "Quần áo", 500000);
-        AuctionEntity auction1 = new AuctionEntity(1, item1, 600000, System.currentTimeMillis(), System.currentTimeMillis() + 120000);
+        AuctionEntity auction1 = new AuctionEntity("1", item1, 600000, System.currentTimeMillis(), System.currentTimeMillis() + 120000);
         auctions.put(auction1.getAuctionId(), auction1);
     }
 
@@ -68,5 +68,16 @@ public class AuctionServer {
     public static void removeClient(ClientHandler clientHandler) {
         clients.remove(clientHandler);
         System.out.println("📉 Một Client đã thoát. Tổng số user hiện tại: " + clients.size());
+    }
+
+
+    // Hàm xác thực người dùng (Sau này sẽ gọi Database ở đây)
+    public static CommonClasses.User authenticate(String username, String password) {
+        // Tạm thời giả lập Database có 1 tài khoản là admin/123
+        if (username.equals("admin") && password.equals("123")) {
+            // Khởi tạo thẻ Căn cước công dân thật
+            return new CommonClasses.User("USR-01", username, password, CommonClasses.UserRole.ADMIN, null);
+        }
+        return null; // Trả về null nếu sai mật khẩu
     }
 }

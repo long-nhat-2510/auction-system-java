@@ -3,6 +3,8 @@ package server;
 import CommonClasses.AuctionEntity;
 import packets.NetworkMessage;
 import packets.RequestType;
+import payload.response.CountdownTickEvent;
+
 import java.util.Map;
 
 public class AuctionTimer implements Runnable {
@@ -14,7 +16,7 @@ public class AuctionTimer implements Runnable {
                 Thread.sleep(1000); // Ngủ 1 giây
                 long currentTime = System.currentTimeMillis();
 
-                for (Map.Entry<Integer, AuctionEntity> entry : AuctionServer.auctions.entrySet()) {
+                for (Map.Entry<String, AuctionEntity> entry : AuctionServer.auctions.entrySet()) {
                     AuctionEntity auction = entry.getValue();
 
                     if (auction.isActive()) {
@@ -32,7 +34,7 @@ public class AuctionTimer implements Runnable {
                             // CHÚ Ý: Đã xóa vòng lặp if để Server gửi thông báo đi MỖI GIÂY
                             System.out.println("DEBUG: Server đang đếm " + secondsLeft + "s");
 
-                            payload.CountdownTickEvent tickEvent = new payload.CountdownTickEvent(auction.getAuctionId(), secondsLeft);
+                            CountdownTickEvent tickEvent = new CountdownTickEvent(auction.getAuctionId(), secondsLeft);
                             NetworkMessage msg = new NetworkMessage(RequestType.COUNTDOWN_TICK_EVENT, tickEvent);
                             AuctionServer.broadcast(msg);
                         }

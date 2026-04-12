@@ -1,24 +1,24 @@
-package payload;
+package payload.response;
 
 public class NoWinnerNotification {
 
-    private int auctionId;
+    private String auctionId;
 
     // Constructor rỗng (Cực kỳ quan trọng: Bắt buộc phải có để các thư viện như Gson/Jackson có thể dịch ngược từ JSON sang Object)
     public NoWinnerNotification() {
     }
 
     // Constructor để Server sử dụng khi đóng gói dữ liệu
-    public NoWinnerNotification(int auctionId) {
+    public NoWinnerNotification(String auctionId) {
         this.auctionId = auctionId;
     }
 
     // Getter và Setter
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
-    public void setAuctionId(int auctionId) {
+    public void setAuctionId(String auctionId) {
         this.auctionId = auctionId;
     }
 
