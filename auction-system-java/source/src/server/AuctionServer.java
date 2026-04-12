@@ -14,6 +14,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import java.time.LocalDateTime;
+
 public class AuctionServer {
 
     // Kho chứa danh sách Client và các Phiên đấu giá
@@ -53,7 +55,7 @@ public class AuctionServer {
     // Tách phần tạo dữ liệu ảo ra một hàm riêng cho sạch sẽ
     private void initMockData() {
         AuctionItem item1 = new AuctionItem("A01", "Áo trinh sát đoàn", "Hàng real limited", "Eren Yeager", "Quần áo", 500000);
-        AuctionEntity auction1 = new AuctionEntity("1", item1, 600000, System.currentTimeMillis(), System.currentTimeMillis() + 120000);
+        AuctionEntity auction1 = new AuctionEntity("1", item1, 600000, LocalDateTime.now(), LocalDateTime.now().plusMinutes(2));
         auctions.put(auction1.getAuctionId(), auction1);
     }
 

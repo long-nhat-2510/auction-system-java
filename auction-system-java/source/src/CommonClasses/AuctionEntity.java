@@ -1,8 +1,10 @@
 package CommonClasses;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Timestamp;
+
 
 public class AuctionEntity {
 
@@ -13,22 +15,26 @@ public class AuctionEntity {
     private double currentPrice;
 
     private String highestBidder;
-    private boolean active;
 
-    private long startTime;
-    private long endTime;
+    // Thay thế boolean active bằng Enum AuctionStatus
+    private AuctionStatus status;
+
+    // Thay thế long bằng LocalDateTime
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     private List<BidRecord> bidHistory;
 
     // Constructor rỗng (bắt buộc cho Gson)
     public AuctionEntity() {
         this.bidHistory = new ArrayList<>();
+        this.status = AuctionStatus.WAITING; // Trạng thái mặc định
     }
 
     // Constructor đầy đủ
     public AuctionEntity(String auctionId, AuctionItem item,
                          double startingPrice,
-                         long startTime, long endTime) {
+                         LocalDateTime startTime, LocalDateTime endTime) {
 
         this.auctionId = auctionId;
         this.item = item;
@@ -38,29 +44,33 @@ public class AuctionEntity {
         this.startTime = startTime;
         this.endTime = endTime;
 
-        this.active = true;
         this.bidHistory = new ArrayList<>();
+
+        // Kiểm tra và gán trạng thái chuẩn ngay khi khởi tạo
+        updateStatus();
     }
 
     // ================== LOGIC CHÍNH ==================
 
     public synchronized boolean placeBid(String bidder, double amount) {
 
-        checkExpired(); // 🔥 luôn kiểm tra trước
+        updateStatus(); // 🔥 luôn cập nhật trạng thái hiện tại trước khi xử lý bid
 
-        if (!active) return false;
+        // Chỉ cho phép bid nếu phiên đấu giá đang diễn ra
+        if (this.status != AuctionStatus.RUNNING) return false;
 
         if (amount <= currentPrice) return false;
 
         currentPrice = amount;
         highestBidder = bidder;
 
+
         BidRecord bid = new BidRecord(
-                "BID-" + System.currentTimeMillis(),
+                "BID-" + LocalDate.now(),
                 auctionId,
                 bidder,
                 amount,
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
 
         bidHistory.add(bid);
@@ -68,16 +78,32 @@ public class AuctionEntity {
         return true;
     }
 
-    // Kiểm tra hết hạn
-    public void checkExpired() {
-        if (System.currentTimeMillis() > endTime) {
-            active = false;
+    // Nâng cấp từ checkExpired: Kiểm tra và cập nhật trạng thái dựa vào thời gian thực
+    public void updateStatus() {
+        // Nếu đã bị đóng thủ công từ trước thì không thay đổi nữa
+        if (this.status == AuctionStatus.FINISHED) {
+            return;
         }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isBefore(startTime)) {
+            this.status = AuctionStatus.WAITING;
+        } else if (now.isAfter(endTime)) {
+            this.status = AuctionStatus.FINISHED;
+        } else {
+            this.status = AuctionStatus.RUNNING;
+        }
+    }
+
+    // Giữ lại hàm này để tương thích ngược nếu các class khác đang gọi
+    public void checkExpired() {
+        updateStatus();
     }
 
     // Đóng auction thủ công
     public void closeAuction() {
-        this.active = false;
+        this.status = AuctionStatus.FINISHED;
     }
 
     // Lấy bid cao nhất
@@ -93,10 +119,15 @@ public class AuctionEntity {
     public double getStartingPrice() { return startingPrice; }
     public double getCurrentPrice() { return currentPrice; }
     public String getHighestBidder() { return highestBidder; }
-    public boolean isActive() { return active; }
+
+    // Cập nhật Getter cho status
+    public AuctionStatus getStatus() { return status; }
+
     public List<BidRecord> getBidHistory() { return bidHistory; }
-    public long getStartTime() { return startTime; }
-    public long getEndTime() { return endTime; }
+
+    // Cập nhật Getter cho thời gian
+    public LocalDateTime getStartTime() { return startTime; }
+    public LocalDateTime getEndTime() { return endTime; }
 
     // ================== DEBUG ==================
 
@@ -106,6 +137,6 @@ public class AuctionEntity {
                 " | Item: " + (item != null ? item.getName() : "Unknown") +
                 " | Current Price: " + currentPrice +
                 " | Highest Bidder: " + (highestBidder != null ? highestBidder : "None") +
-                " | Active: " + active;
+                " | Status: " + status; // In ra enum
     }
 }
