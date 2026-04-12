@@ -38,8 +38,7 @@ public class UserDAO {
      * Xác thực đăng nhập
      */
     public User login(String username, String password) throws SQLException {
-        // LỖI CŨ: Bạn SELECT thiếu role nhưng bên dưới lại dùng rs.getString("role")
-        // FIX: SELECT đầy đủ các cột cần thiết
+
         String sql = "SELECT user_id, username, role FROM auction_db.users WHERE username = ? AND password = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
