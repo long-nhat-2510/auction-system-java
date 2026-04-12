@@ -75,11 +75,7 @@ public class ServerConnection {
 
                             } else {
                                 // Nếu sai mật khẩu, hiện bảng thông báo lỗi cho khách
-                                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                                alert.setTitle("Đăng nhập thất bại");
-                                alert.setHeaderText(null);
-                                alert.setContentText(res.getMessage());
-                                alert.showAndWait();
+                                showErrorAlert("Đăng nhập thất bại", res.getMessage());
                             }
                         });
                         break;
@@ -88,27 +84,38 @@ public class ServerConnection {
 
 
                     case WINNER_NOTIFICATION:
-                        // Trong ServerConnection.java
-
                         payload.response.WinnerNotification winnerEvent = msg.getDataAs(payload.response.WinnerNotification.class);
 
-                        System.out.println("\n=========================================");
+                        // 1. Vẫn giữ lại dòng in ra Console để dễ debug
                         System.out.println("🎉 [KẾT QUẢ ĐẤU GIÁ] Phiên ID: " + winnerEvent.getAuctionId() + " đã khép lại!");
-                        System.out.println("🏆 NGƯỜI CHIẾN THẮNG: " + winnerEvent.getWinnerName());
-                        System.out.println("💰 MỨC GIÁ CHỐT ĐƠN: " + winnerEvent.getWinningPrice() + " VNĐ");
-                        System.out.println("=========================================\n");
 
-                        System.out.print("👉 Lựa chọn của bạn: "); // In lại menu để người dùng gõ tiếp
+                        // 2. Bắn Popup thông báo trên giao diện JavaFX
+                        javafx.application.Platform.runLater(() -> {
+                            String formattedPrice = String.format("%,.0f", winnerEvent.getWinningPrice());
+
+                            showInfoAlert("Kết quả đấu giá",
+                                    "Phiên đấu giá #" + winnerEvent.getAuctionId() + " đã kết thúc!\n\n" +
+                                    "Người chiến thắng: " + winnerEvent.getWinnerName() + "\n" +
+                                    "Mức giá cuối cùng: " + formattedPrice + " VNĐ\n\n"
+                                    );
+                        });
                         break;
 
                     case AUCTION_UPDATE_EVENT:
-                        // ép kiểu payload
+                        // 1. Ép kiểu payload
                         payload.response.AuctionUpdateEvent updateEvent = msg.getDataAs(payload.response.AuctionUpdateEvent.class);
 
-                        System.out.println("\n [News] Giá của mã đấu giá " + updateEvent.getAuctionId() + " vừa thay đổi!");
-                        System.out.println(" Người dẫn đầu: " + updateEvent.getHighestBidder());
-                        System.out.println(" Mức giá mới: " + updateEvent.getCurrentBid() + " VND");
+                        // 2. Bắt buộc phải xin phép luồng UI
+                        javafx.application.Platform.runLater(() -> {
+                            // Tạm thời in ra Console để check
+                            System.out.println("🔥 [HOT] Phiên #" + updateEvent.getAuctionId() +
+                                    " | Dẫn đầu: " + updateEvent.getHighestBidder() +
+                                    " | Giá mới: " + updateEvent.getCurrentBid());
 
+                            // TODO: Sau này có giao diện Chi tiết đấu giá, bạn sẽ gọi lệnh update text ở đây
+                            // Ví dụ: lblHighestBidder.setText(updateEvent.getHighestBidder());
+                            //        lblCurrentPrice.setText(String.valueOf(updateEvent.getCurrentBid()));
+                        });
                         break;
                     case REGISTRATION_CONFIRMATION:
                         //
@@ -129,11 +136,13 @@ public class ServerConnection {
                         //
                         break;
                     case ERROR_RESPONSE:
-                        // Lấy nội dung lỗi Server gửi về (Tùy thuộc bạn đang lưu dữ liệu dạng String hay ErrorPayload)
+
                         // Giả sử Server gửi String báo lỗi:
                         String errorMsg = msg.getDataAs(String.class);
                         System.out.println("\n❌ [TỪ CHỐI]: " + errorMsg);
-                        System.out.print("👉 Lựa chọn của bạn: ");
+                        javafx.application.Platform.runLater(() -> {
+                            showErrorAlert("Lỗi hệ thống", errorMsg);
+                        });
                         break;
                     case COUNTDOWN_START_EVENT:
                         //
@@ -155,4 +164,19 @@ public class ServerConnection {
             System.out.println("Lost connection to the server.");
         }
     }
+    private void showErrorAlert(String title, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.show(); // Dùng show() thay vì showAndWait() để không treo luồng
+    }
+    private void showInfoAlert(String title, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.show();
+    }
+
 }
