@@ -1,4 +1,4 @@
-package payload;
+package payload.response;
 
 public class HighestBidResponse {
 
