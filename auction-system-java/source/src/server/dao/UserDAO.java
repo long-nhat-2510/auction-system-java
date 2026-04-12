@@ -4,20 +4,18 @@ import server.database.DatabaseConnection;
 import CommonClasses.User;
 import CommonClasses.UserRole;
 import java.sql.*;
-import java.util.UUID; // Thư viện để sinh ID ngẫu nhiên
+import java.util.UUID;
 
 public class UserDAO {
 
     /**
-     * Đăng ký người dùng mới (ID tự sinh trên Server)
+     * Đăng ký người dùng mới
      */
-    public boolean register(User user, String password, UserRole role) throws SQLException {
-        // 1. Tự sinh ID ngẫu nhiên (lấy 8 ký tự cho gọn)
-        String uniqueID = UUID.randomUUID().toString().substring(0, 8);
+    public boolean register(User user, String password, UserRole role) {
+        String uniqueID = "USR-" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
         user.setUser_id(uniqueID);
 
-        // 2. Câu lệnh SQL phải có user_id vì mình tự truyền vào
-        String sql = "INSERT INTO auction_db.users (user_id, username, password, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (user_id, username, password, role) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -29,7 +27,10 @@ public class UserDAO {
 
             return ps.executeUpdate() > 0;
         } catch (SQLIntegrityConstraintViolationException e) {
-            System.err.println("Lỗi: Username đã tồn tại!");
+            System.err.println("❌ Lỗi: Username đã tồn tại trong Database!");
+            return false;
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi SQL khi đăng ký: " + e.getMessage());
             return false;
         }
     }
@@ -37,9 +38,9 @@ public class UserDAO {
     /**
      * Xác thực đăng nhập
      */
-    public User login(String username, String password) throws SQLException {
-
-        String sql = "SELECT user_id, username, role FROM auction_db.users WHERE username = ? AND password = ?";
+    public User login(String username, String password) {
+        // Cần SELECT thêm password và balance (nếu có) để tạo object User hoàn chỉnh
+        String sql = "SELECT user_id, username, password, role FROM users WHERE username = ? AND password = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -49,16 +50,17 @@ public class UserDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Lấy dữ liệu ra
                     String id = rs.getString("user_id");
                     String name = rs.getString("username");
-                    // Chuyển String từ DB thành Enum UserRole (viết hoa để khớp)
+                    String pass = rs.getString("password");
                     UserRole role = UserRole.valueOf(rs.getString("role").toUpperCase());
 
-                    // Trả về đối tượng User (Dùng Constructor: ID, Name, Role)
-                    return new User(id, name, role);
+                    // Trả về User (Tùy thuộc vào Constructor bên CommonClasses của bạn)
+                    return new User(id, name, pass, role, 0.0); // Giả sử có thêm số dư
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi SQL khi login: " + e.getMessage());
         }
         return null;
     }

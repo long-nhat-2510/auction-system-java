@@ -28,7 +28,7 @@ public class AuctionServer {
 
     // [KẾT NỐI DATABASE]: Triệu hồi các ông Thủ kho
     private static final UserDAO userDAO = new UserDAO();
-    // private static final AuctionDAO auctionDAO = new AuctionDAO(); // Mở ra nếu đã có
+    private static final AuctionDAO auctionDAO = new AuctionDAO();
 
     public void start(int port) {
         System.out.println("🚀 AuctionServer starting on port " + port + "...");
@@ -61,15 +61,20 @@ public class AuctionServer {
     private void loadAuctions() {
         System.out.println("📦 Đang nạp dữ liệu phiên đấu giá...");
 
+        // Chỉ việc gọi thẳng hàm, KHÔNG CẦN try-catch nữa vì AuctionDAO đã tự lo rồi!
+        java.util.List<CommonClasses.AuctionEntity> dbAuctions = auctionDAO.getAllAuctions();
 
-        Map<String, AuctionEntity> dbAuctions = auctionDAO.getAllActiveAuctions();
-        auctions.putAll(dbAuctions);
+        // Đổ từ List vào cái Map của Server
+        if (dbAuctions != null) {
+            for (CommonClasses.AuctionEntity auction : dbAuctions) {
+                auctions.put(auction.getAuctionId(), auction);
+            }
+        }
         System.out.println("✅ Đã tải " + auctions.size() + " phiên đấu giá từ DB.");
 
-
         // Tạm thời vẫn giữ 1 sản phẩm ảo để test chức năng đấu giá
-        AuctionItem item1 = new AuctionItem("A01", "Áo trinh sát đoàn", "Hàng real limited", "Eren Yeager", "Quần áo", 500000);
-        AuctionEntity auction1 = new AuctionEntity("1", item1, 600000, LocalDateTime.now(), LocalDateTime.now().plusMinutes(1));
+        CommonClasses.AuctionItem item1 = new CommonClasses.AuctionItem("A01", "Áo trinh sát đoàn", "Hàng real limited", "Eren Yeager", "Quần áo", 500000);
+        CommonClasses.AuctionEntity auction1 = new CommonClasses.AuctionEntity("1", item1, 600000, java.time.LocalDateTime.now(), java.time.LocalDateTime.now().plusMinutes(1));
         auctions.put(auction1.getAuctionId(), auction1);
     }
 
@@ -91,6 +96,6 @@ public class AuctionServer {
     // ====================================================================
     public static CommonClasses.User authenticate(String username, String password) {
         // AuctionServer không tự làm nữa, giao thẳng cho UserDAO quét MySQL
-        return userDAO.authenticate(username, password);
+        return userDAO.login(username, password);
     }
 }
