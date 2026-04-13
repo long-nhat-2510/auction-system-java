@@ -3,8 +3,8 @@ package server;
 import CommonClasses.AuctionEntity;
 import packets.NetworkMessage;
 import packets.RequestType;
-import payload.WinnerNotification;
-import payload.NoWinnerNotification;
+import payload.response.WinnerNotification;
+import payload.response.NoWinnerNotification;
 
 public class AuctionFinalizer {
 
@@ -23,7 +23,7 @@ public class AuctionFinalizer {
                     auction.getCurrentPrice()
             );
             NetworkMessage msg = new NetworkMessage(RequestType.WINNER_NOTIFICATION, winnerPayload);
-            ServerLauncher.broadcast(msg);
+            AuctionServer.broadcast(msg);
 
         } else {
 
@@ -31,11 +31,11 @@ public class AuctionFinalizer {
 
             NoWinnerNotification noWinnerPayload = new NoWinnerNotification(auction.getAuctionId());
             NetworkMessage msg = new NetworkMessage(RequestType.NO_WINNER_NOTIFICATION, noWinnerPayload);
-            ServerLauncher.broadcast(msg);
+            AuctionServer.broadcast(msg);
 
         }
 
         // Xóa phiên đấu giá đã hoàn tất khỏi ServerLauncher để giải phóng bộ nhớ
-        ServerLauncher.auctions.remove(auction.getAuctionId());
+        AuctionServer.auctions.remove(auction.getAuctionId());
     }
 }
