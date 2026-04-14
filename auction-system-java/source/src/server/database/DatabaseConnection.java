@@ -1,45 +1,56 @@
 package server.database;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DatabaseConnection {
-    // Biến static duy nhất của lớp (Singleton)
     private static volatile DatabaseConnection instance;
-    private Connection connection;
+    private final String url;
+    private final String username;
+    private final String password;
 
-    // Thông tin cấu hình (Nên để trong file .properties sau này)
-    private String url = "jdbc:mysql://localhost:3306/auction_db";
-    private String username = "root";
-    private String password = "123456";
+    private DatabaseConnection() {
+        Properties config = loadProperties();
+        this.url = config.getProperty("db.url");
+        this.username = config.getProperty("db.username");
+        this.password = config.getProperty("db.password");
 
-    // Constructor private để ngăn việc tạo đối tượng từ bên ngoài
-    private DatabaseConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException e) {
-            System.out.println("Không tìm thấy MySQL Driver: " + e.getMessage());
+            throw new RuntimeException("MySQL driver not found", e);
         }
     }
 
-    // Phương thức public để lấy instance duy nhất
-    public static DatabaseConnection getInstance() throws SQLException {
+    private Properties loadProperties() {
+        Properties props = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("database.properties")) {
+            if (input == null) {
+                throw new IllegalStateException("database.properties không tìm thấy trong classpath");
+            }
+            props.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException("Không thể đọc database.properties", e);
+        }
+        return props;
+    }
+
+    public static DatabaseConnection getInstance() {
         if (instance == null) {
-            synchronized (DatabaseConnection.class){
-                if (instance == null){
+            synchronized (DatabaseConnection.class) {
+                if (instance == null) {
                     instance = new DatabaseConnection();
                 }
             }
-
-        } else if (instance.getConnection().isClosed()) {
-            instance = new DatabaseConnection();
         }
         return instance;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
     }
 }
