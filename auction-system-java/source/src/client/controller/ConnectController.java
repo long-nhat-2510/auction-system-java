@@ -9,6 +9,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import client.ServerConnection;
 
 public class ConnectController {
 
@@ -28,12 +29,20 @@ public class ConnectController {
     // (Tuỳ chọn) Nếu bạn muốn code cả tính năng Lưu tài khoản thì vào FXML
     // đặt thêm fx:id="rememberMeCheckbox" cho cái CheckBox nhé.
     // @FXML private CheckBox rememberMeCheckbox;
+    /** tạo 1 biến static lưu Controller*/
+    private static ConnectController instance;
+
+    public static ConnectController getInstance() {
+        return instance;
+    }
+
 
     // ==========================================
     // 2. HÀM KHỞI TẠO (Chạy ngay khi mở màn hình)
     // ==========================================
     @FXML
     public void initialize() {
+        instance = this;
         // Điền sẵn localhost và 1234 cho tiện lúc test, đỡ phải gõ lại nhiều lần
         ipField.setText("localhost");
         portField.setText("1234");
@@ -74,12 +83,12 @@ public class ConnectController {
             // 3. TIẾN HÀNH KẾT NỐI VÀ GỬI GÓI TIN ĐĂNG NHẬP (Lắp logic Mạng của bạn vào đây)
             System.out.println("Đang kết nối tới " + ip + ":" + port + " bằng tài khoản: " + username);
 
-            /* TODO: BẠN BỎ COMMENT ĐOẠN NÀY VÀ ĐIỀN CODE CỦA BẠN VÀO NHÉ
-             * * ServerConnection.getInstance().connect(ip, port);
-             * * payload.request.LoginRequest req = new payload.request.LoginRequest(username, password);
-             * packets.NetworkMessage msg = new packets.NetworkMessage(packets.RequestType.LOGIN_REQUEST, req);
-             * * ServerConnection.getInstance().sendMessage(msg);
-             */
+
+            ServerConnection.getInstance().connect(ip, port);
+            payload.request.LoginRequest req = new payload.request.LoginRequest(username, password);
+            packets.NetworkMessage msg = new packets.NetworkMessage(packets.RequestType.LOGIN_REQUEST, req);
+            ServerConnection.getInstance().sendRequest(msg);
+
 
             // Lưu ý: Việc mở khóa lại nút btnLogin.setDisable(false) sẽ được thực hiện
             // ở bên hàm lắng nghe luồng phản hồi từ Server trả về nhé!
@@ -105,6 +114,10 @@ public class ConnectController {
     void handleForgotPassword(ActionEvent event) {
         System.out.println("Mở popup Quên mật khẩu...");
         // TODO: Hiện một cái Alert (showInfoAlert) bảo là "Tính năng đang phát triển" chẳng hạn
+    }
+    // Hàm trung gian để file xử lý mạng gọi vào
+    public void onLoginFailed(String errorMessage) {
+        showError(errorMessage);
     }
 
     // ==========================================

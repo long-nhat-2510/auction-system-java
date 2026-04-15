@@ -12,7 +12,7 @@ public class DatabaseConnection {
     private Connection connection;
 
     // Sửa lại tên DB, User, Pass cho khớp với máy của bạn nhé
-    private final String URL = "jdbc:mysql://localhost:3306/auction_db";
+    private final String URL = "jdbc:mysql://127.0.0.1:3306/auction_db";
     private final String USER = "root";
     private final String PASSWORD = "123456";
 

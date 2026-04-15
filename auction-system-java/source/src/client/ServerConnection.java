@@ -70,12 +70,15 @@ public class ServerConnection {
                                 CommonClasses.User myProfile = res.getUserProfile();
                                 System.out.println("🎉 CHÀO MỪNG: " + myProfile.getUsername());
 
-                                // TODO: Lệnh chuyển sang màn hình AuctionTableView
-                                // Ví dụ: SceneManager.switchScene("AuctionView.fxml");
+                                client.utils.SceneManager.switchScene("/client/view/LobbyView.fxml");
 
                             } else {
                                 // Nếu sai mật khẩu, hiện bảng thông báo lỗi cho khách
                                 showErrorAlert("Đăng nhập thất bại", res.getMessage());
+                                // Cho ConnectController tự động hiện lỗi và mở khóa nút bấm
+                                if (client.controller.ConnectController.getInstance() != null) {
+                                    client.controller.ConnectController.getInstance().onLoginFailed(res.getMessage());
+                                }
                             }
                         });
                         break;

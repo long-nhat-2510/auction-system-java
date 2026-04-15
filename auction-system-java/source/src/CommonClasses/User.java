@@ -4,9 +4,8 @@ public class User {
     private String user_id;
     private String username;
     private String password;
-    private UserRole role;
     private double balance; // Số dư
-
+    private String fullname;
 
     // CONSTRUCTOR 0: BẮT BUỘC DÀNH CHO THƯ VIỆN JSON
     // (Gson/Jackson sẽ dùng cái này để ép kiểu)
@@ -15,22 +14,22 @@ public class User {
     }
 
 
-    public User(String user_id, String username, String password, UserRole role, double balance) {
+    public User(String user_id, String username, String password, String fullname, double balance) {
         this.user_id = user_id;
         this.username = username;
         this.password = password;
-        this.role = role;
         this.balance = balance;
+        this.fullname = fullname;
     }
 
     // ----------------------------------------------------
     // CONSTRUCTOR 2: CHE MẬT KHẨU (Dùng để trả về Client)
     // ----------------------------------------------------
-    public User(String user_id, String username, UserRole role, double balance) {
+    public User(String user_id, String username, String fullname, double balance) {
         this.user_id = user_id;
         this.username = username;
         this.password = "*****"; // Giấu mật khẩu khi truyền qua mạng
-        this.role = role;
+        this.fullname = fullname;
         this.balance = balance;
     }
 
@@ -61,14 +60,6 @@ public class User {
         this.password = password;
     }
 
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
     public double getBalance() {
         return balance;
     }
@@ -77,12 +68,19 @@ public class User {
         this.balance = balance;
     }
 
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id='" + user_id + '\'' +
                 ", name='" + username + '\'' +
-                ", role=" + role +
                 ", balance=" + balance +
                 '}';
     }

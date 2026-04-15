@@ -37,8 +37,8 @@ public class AuctionServer {
         loadAuctions();
 
         // 2. Bật công tắc đồng hồ đếm ngược
-        Thread timerThread = new Thread(new AuctionTimer());
-        timerThread.start();
+//        Thread timerThread = new Thread(new AuctionTimer());
+//        timerThread.start();
 
         // 3. Mở cửa đón khách
         try (ServerSocket serverSocket = new ServerSocket(port)) {
