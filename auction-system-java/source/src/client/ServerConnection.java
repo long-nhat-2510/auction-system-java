@@ -173,7 +173,14 @@ public class ServerConnection {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(content);
+        // 1. Tự tạo một nhãn (Label) chứa câu thông báo để dễ ép màu
+        javafx.scene.control.Label contentLabel = new javafx.scene.control.Label(content);
+        // Ép màu chữ xanh ngọc (khớp với nút bấm) và chỉnh size chữ to rõ ràng hơn
+        contentLabel.setStyle("-fx-text-fill: #00B981; -fx-font-size: 14px; -fx-font-weight: bold;");
+        // Nhét cái nhãn này vào làm nội dung của Alert
+        alert.getDialogPane().setContent(contentLabel);
+        alert.getDialogPane().setStyle("-fx-background-color: #111C2D;");
+        alert.getDialogPane().setGraphic(null);
         alert.show(); // Dùng show() thay vì showAndWait() để không treo luồng
     }
     private void showInfoAlert(String title, String content) {
