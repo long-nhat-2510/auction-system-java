@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class ItemDAO {
     public boolean addItem(AuctionItem item) throws SQLException{
         // item_id, name, description, owner_id, category, estimate_price
-        String sql = "INSERT INTO items (item_id, name, description, owner_id, category, estimate_price)"
+        String sql = "INSERT INTO items (item_id, name, description, owner_id, category, estimate_price) "
                 + "VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)){
