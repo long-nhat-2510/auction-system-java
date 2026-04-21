@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<StackPane prefHeight="560" prefWidth="420" style="-fx-background-color: #0c192c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RegisterController">
+<StackPane prefHeight="560" prefWidth="420" style="-fx-background-color: #0c192c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterController">
 
     <!-- Background -->
     <VBox alignment="TOP_CENTER" style="-fx-padding: 0;">
