@@ -2,7 +2,9 @@ package server;
 
 import CommonClasses.AuctionEntity;
 import CommonClasses.AuctionItem;
+import CommonClasses.User;
 import packets.NetworkMessage;
+import payload.request.CreateAccountRequest;
 import server.dao.UserDAO; // BỔ SUNG: Import ông Thủ kho tài khoản
 import server.dao.AuctionDAO;
 
@@ -97,5 +99,15 @@ public class AuctionServer {
     public static CommonClasses.User authenticate(String username, String password) {
         // AuctionServer không tự làm nữa, giao thẳng cho UserDAO quét MySQL
         return userDAO.login(username, password);
+    }
+    public static boolean registerNewUser(CreateAccountRequest req) {
+        // Sau này nếu có logic kiểm tra gì thêm (ví dụ check tên có chứa từ cấm không) thì viết ở đây
+        // ...
+        User newUser = new User();
+        newUser.setUsername(req.getUsername());
+        newUser.setFullname(req.getName());
+        UserDAO dao = new UserDAO();
+        // Giao việc cho UserDAO xử lý lưu vào MySQL
+        return dao.register(newUser, req.getPassword());
     }
 }

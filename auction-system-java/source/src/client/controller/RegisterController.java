@@ -9,10 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import client.utils.SceneManager;
-// Thêm các thư viện mạng của bạn nếu cần
-// import packets.NetworkMessage;
-// import packets.RequestType;
-// import payload.request.RegisterRequest;
+import packets.NetworkMessage;
+import packets.RequestType;
+import payload.request.CreateAccountRequest;
+
+
 
 public class RegisterController {
 
@@ -32,11 +33,21 @@ public class RegisterController {
     // ==========================================
     // 2. HÀM KHỞI TẠO
     // ==========================================
+
     @FXML
     public void initialize() {
         lblMessage.setText(""); // Xóa trắng câu thông báo lúc mới mở
-    }
 
+        // === THÊM ĐOẠN NÀY ĐỂ ÉP APP KẾT NỐI NGẦM KHI TEST MÀN HÌNH ĐĂNG KÝ ===
+
+        boolean isConnected = client.ServerConnection.getInstance().connect("127.0.0.1", 1234);
+
+        if (isConnected) {
+            System.out.println("🔧 Đã tự động kết nối ngầm tới Server");
+        } else {
+            System.out.println("❌ Không thể kết nối, hãy đảm bảo ServerLauncher đã được chạy trước!");
+        }
+    }
     // ==========================================
     // 3. XỬ LÝ NÚT: ĐĂNG KÝ
     // ==========================================
@@ -73,26 +84,26 @@ public class RegisterController {
         lblMessage.setStyle("-fx-text-fill: #3498db; -fx-font-weight: bold;"); // Màu xanh dương
         btnRegister.setDisable(true);
 
-        System.out.println("Chuẩn bị đăng ký tài khoản: " + username);
 
         // ========================================================
         // 5. GỬI GÓI TIN LÊN SERVER (Mở comment đoạn này ra khi ráp code)
         // ========================================================
-        /*
+
         try {
             // Đóng gói dữ liệu
-            RegisterRequest req = new RegisterRequest(name, email, username, phone, password);
-            NetworkMessage msg = new NetworkMessage(RequestType.REGISTER_REQUEST, req);
+            CreateAccountRequest req = new CreateAccountRequest(name, email, username, phone, password);
+            NetworkMessage msg = new NetworkMessage(RequestType.CREATE_ACCOUNT_REQUEST, req);
 
             // Gửi qua ServerConnection
-            client.ServerConnection.getInstance().sendMessage(msg);
+            client.ServerConnection.getInstance().sendRequest(msg);
+            System.out.println("Gửi yêu cầu đăng ký tài khoản:" + name);
 
             // Lưu ý: Không mở khóa nút (btnRegister.setDisable(false)) ở đây.
-            // Hãy để hàm nhận phản hồi từ Server (LoginResponse/RegisterResponse) mở khóa hoặc chuyển màn hình.
+            // Hãy để hàm nhận phản hồi từ Server (LoginResponse/CreateAccountResponse) mở khóa hoặc chuyển màn hình.
         } catch (Exception e) {
             showError("❌ Lỗi kết nối Server!");
         }
-        */
+
     }
 
     // ==========================================

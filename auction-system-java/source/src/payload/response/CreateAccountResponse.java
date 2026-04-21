@@ -1,14 +1,14 @@
 package payload.response;
 
-public class RegisterResponse {
+public class CreateAccountResponse {
     private boolean isSuccess;
     private String message;
 
     // CONSTRUCTOR RỖNG (Bắt buộc cho JSON)
-    public RegisterResponse() {
+    public CreateAccountResponse() {
     }
 
-    public RegisterResponse(boolean isSuccess, String message) {
+    public CreateAccountResponse(boolean isSuccess, String message) {
         this.isSuccess = isSuccess;
         this.message = message;
     }
