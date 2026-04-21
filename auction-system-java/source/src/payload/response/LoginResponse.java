@@ -6,6 +6,8 @@ public class LoginResponse {
     private boolean isSuccess;
     private String message;
     private User userProfile;
+    // cho JSON
+    public LoginResponse() {}
 
     // Constructor
     public LoginResponse(boolean isSuccess, String message, User userProfile) {

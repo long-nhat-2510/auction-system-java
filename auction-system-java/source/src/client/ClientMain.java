@@ -5,24 +5,23 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import client.utils.SceneManager;
+
 
 public class ClientMain extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        // Nạp file giao diện ConnectView.fxml từ thư mục view
-        Parent root = FXMLLoader.load(getClass().getResource("/client/view/ConnectView.fxml"));
+    public void start(Stage primaryStage) {
+        // 1. Giao cửa sổ cho SceneManager quản lý
+        SceneManager.setPrimaryStage(primaryStage);
 
-        // Tạo khung cảnh (Scene) chứa giao diện vừa nạp
-        Scene scene = new Scene(root);
+        // 2. Đặt tiêu đề cho cửa sổ
+        primaryStage.setTitle("AuctionLive - Hệ thống đấu giá trực tuyến");
+        primaryStage.setResizable(false); // Khóa phóng to thu nhỏ (tuỳ chọn)
 
-        // Thiết lập các thuộc tính cho cửa sổ (Stage)
-        primaryStage.setTitle("AuctionLive - Hệ thống Đấu giá");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false); // Khóa không cho người dùng kéo dãn cửa sổ
-
-        // Hiển thị cửa sổ lên màn hình
-        primaryStage.show();
+        // 3. Mở màn hình đầu tiên (Login)
+        // LƯU Ý: Đường dẫn bắt đầu bằng dấu "/" trỏ từ thư mục resources hoặc thư mục gốc
+        SceneManager.switchScene("/client/view/ConnectView.fxml");
     }
 
     public static void main(String[] args) {

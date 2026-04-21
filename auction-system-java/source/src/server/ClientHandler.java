@@ -6,7 +6,6 @@ import payload.request.AuctionIdRequest;
 import CommonClasses.AuctionEntity;
 import payload.request.PlaceBidRequest;
 import payload.response.AuctionUpdateEvent;
-import CommonClasses.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -113,6 +112,37 @@ public class ClientHandler implements Runnable {
 
                         NetworkMessage response = new NetworkMessage(RequestType.AUCTION_DATA_RESPONSE, "Server received id: " + id);
                         sendMessage(response);
+                        break;
+                    case CREATE_ACCOUNT_REQUEST:
+                        // 1. BÓC HỘP: Lấy tờ khai đăng ký của khách (Dùng chính class CreateAccountRequest đã tạo)
+                        payload.request.CreateAccountRequest regReq = msg.getDataAs(payload.request.CreateAccountRequest.class);
+                        System.out.println("📝 Đang xử lý yêu cầu đăng ký tài khoản: " + regReq.getUsername());
+
+                        // 2. NHỜ ÔNG QUẢN LÝ CHECK & GHI SỔ (Lưu vào MySQL)
+                        // CẦN SỬA: Thay server.AuctionServer.registerNewUser bằng hàm tương ứng trong project của bạn
+                        // Hàm này nên nhận vào regReq, gọi Database để INSERT, và trả về true nếu thành công, false nếu thất bại (do trùng username/email...)
+                        boolean isRegistered = server.AuctionServer.registerNewUser(regReq);
+
+                        // 3. ĐÓNG GÓI TRẢ LỜI
+                        boolean isSuccess;
+                        String responseMessage;
+
+                        if (isRegistered) {
+                            isSuccess = true;
+                            responseMessage = "✅ Đăng ký tài khoản thành công!";
+                            System.out.println("✅ Đã ghi sổ tài khoản mới: " + regReq.getUsername());
+                        } else {
+                            isSuccess = false;
+                            responseMessage = "❌ Đăng ký thất bại (Tên đăng nhập hoặc Email có thể đã tồn tại) !";
+                            System.out.println("❌ Khách " + regReq.getUsername() + " đăng ký thất bại.");
+                        }
+
+                        // CẦN TẠO/SỬA: Bạn nhớ tạo class payload.response.CreateAccountResponse (chứa boolean success, String message)
+                        payload.response.CreateAccountResponse regRes = new payload.response.CreateAccountResponse(isSuccess, responseMessage);
+
+                        // Gửi thư trả lời lại cho khách
+                        sendMessage(new packets.NetworkMessage(packets.RequestType.CREATE_ACCOUNT_RESPONSE, regRes));
+
                         break;
 
                     // Các case khác chưa xử lý...

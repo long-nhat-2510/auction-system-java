@@ -1,108 +1,136 @@
 package client.controller;
 
-import client.ServerConnection;
+import client.utils.SceneManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-
-// Bổ sung import các gói tin
-import packets.NetworkMessage;
-import packets.RequestType;
-import payload.request.LoginRequest;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import client.ServerConnection;
 
 public class ConnectController {
 
-    // Khai báo các biến khớp với fx:id trong file FXML
+    // ==========================================
+    // 1. LIÊN KẾT GIAO DIỆN (Bắt buộc phải khớp fx:id)
+    // ==========================================
     @FXML private TextField ipField;
     @FXML private TextField portField;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
-    @FXML private Button btnLogin;
     @FXML private Label errorLabel;
-    @FXML private HBox loadingBox;
+    @FXML private Label lblMessage;
+    @FXML private Button btnLogin;
+    @FXML private Hyperlink forgotPasswordLink;
+    @FXML private Hyperlink registerLink;
 
-    @FXML
-    public void initialize() {
-        // Hàm này tự động chạy khi mở giao diện
-        // Gắn sẵn localhost và 1234 để test cho nhanh đỡ phải gõ lại nhiều lần
-        ipField.setText("localhost");
-        portField.setText("1234");
+    // (Tuỳ chọn) Nếu bạn muốn code cả tính năng Lưu tài khoản thì vào FXML
+    // đặt thêm fx:id="rememberMeCheckbox" cho cái CheckBox nhé.
+    // @FXML private CheckBox rememberMeCheckbox;
+    /** tạo 1 biến static lưu Controller*/
+    private static ConnectController instance;
+
+    public static ConnectController getInstance() {
+        return instance;
     }
 
+
+    // ==========================================
+    // 2. HÀM KHỞI TẠO (Chạy ngay khi mở màn hình)
+    // ==========================================
     @FXML
-    public void handleLogin(ActionEvent event) {
+    public void initialize() {
+        instance = this;
+        // Điền sẵn localhost và 1234 cho tiện lúc test, đỡ phải gõ lại nhiều lần
+        ipField.setText("localhost");
+        portField.setText("1234");
+
+        // Ẩn cái nhãn lỗi đi lúc mới mở lên
+        errorLabel.setVisible(false);
+    }
+
+    // ==========================================
+    // 3. XỬ LÝ SỰ KIỆN: NÚT ĐĂNG NHẬP
+    // ==========================================
+    @FXML
+    void handleLogin(ActionEvent event) {
+        // Lấy dữ liệu người dùng nhập và xóa khoảng trắng 2 đầu (.trim())
         String ip = ipField.getText().trim();
         String portStr = portField.getText().trim();
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
 
-        errorLabel.setVisible(false);
-
+        // 1. Kiểm tra xem có bỏ trống ô nào không
         if (ip.isEmpty() || portStr.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showError("Vui lòng điền đầy đủ IP, Port, Tên đăng nhập và mật khẩu!");
+            showError("❌ Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
-        int port;
         try {
-            port = Integer.parseInt(portStr);
+            // Kiểm tra xem Port có phải là số không
+            int port = Integer.parseInt(portStr);
+
+            // 2. Giao diện báo đang xử lý
+            errorLabel.setVisible(false); // Tắt báo lỗi cũ
+            lblMessage.setText("⏳ Đang kết nối...");
+            lblMessage.setStyle("-fx-text-fill: #3498db;"); // Đổi màu xanh dương
+
+            // Khóa nút Đăng nhập lại để tránh khách bấm 2-3 lần liên tục
+            btnLogin.setDisable(true);
+
+            // 3. TIẾN HÀNH KẾT NỐI VÀ GỬI GÓI TIN ĐĂNG NHẬP (Lắp logic Mạng của bạn vào đây)
+            System.out.println("Đang kết nối tới " + ip + ":" + port + " bằng tài khoản: " + username);
+
+
+            ServerConnection.getInstance().connect(ip, port);
+            payload.request.LoginRequest req = new payload.request.LoginRequest(username, password);
+            packets.NetworkMessage msg = new packets.NetworkMessage(packets.RequestType.LOGIN_REQUEST, req);
+            ServerConnection.getInstance().sendRequest(msg);
+
+
+            // Lưu ý: Việc mở khóa lại nút btnLogin.setDisable(false) sẽ được thực hiện
+            // ở bên hàm lắng nghe luồng phản hồi từ Server trả về nhé!
+
         } catch (NumberFormatException e) {
-            showError("Port bắt buộc phải là số!");
-            return;
+            showError("❌ Port kết nối bắt buộc phải là số!");
         }
-
-        // Hiệu ứng UI: Tắt nút bấm, hiện vòng xoay loading
-        btnLogin.setDisable(true);
-        loadingBox.setVisible(true);
-
-        // QUAN TRỌNG: Phải mở luồng (Thread) riêng để kết nối mạng, nếu không giao diện sẽ bị đơ/treo
-        new Thread(() -> {
-            // Gọi ServerConnection (đã được sửa thành Singleton)
-            boolean isConnected = ServerConnection.getInstance().connect(ip, port);
-
-            // Bất cứ khi nào muốn cập nhật lại UI từ luồng mạng, PHẢI dùng Platform.runLater
-            Platform.runLater(() -> {
-                if (isConnected) {
-
-                    // 1. Tạo gói dữ liệu (Payload) chứa thông tin đăng nhập
-                    LoginRequest loginReq = new LoginRequest(username, password);
-
-                    // 2. Nhét vào phong bì và dán tem báo hiệu đây là gói Đăng nhập
-                    NetworkMessage msg = new NetworkMessage(RequestType.LOGIN_REQUEST, loginReq);
-
-                    // 3. Gọi anh Shipper ném qua mạng lên Server!
-                    ServerConnection.getInstance().sendRequest(msg);
-
-                    // 4. Thông báo cho người dùng biết là đang chờ máy chủ duyệt
-                    errorLabel.setText("Đang chờ Server xác thực...");
-                    errorLabel.setStyle("-fx-text-fill: #007BFF;"); // Màu xanh chờ đợi
-                    errorLabel.setVisible(true);
-
-                    // LƯU Ý: Không code chuyển màn hình ở đây nữa!
-                    // Giao diện cứ để im chữ "Đang chờ..." và loading xoay xoay.
-                    // Chuyển màn hình sẽ do hàm listenForMessages của ServerConnection quyết định.
-
-
-                } else {
-                    loadingBox.setVisible(false);
-                    btnLogin.setDisable(false);
-                    showError("Lỗi kết nối! Kiểm tra lại IP hoặc Server đã bật chưa.");
-                }
-            });
-        }).start();
     }
 
+    // ==========================================
+    // 4. XỬ LÝ SỰ KIỆN: NÚT ĐĂNG KÝ
+    // ==========================================
     @FXML
-    public void handleRegister(ActionEvent event) {
-        // Xử lý khi bấm nút "Đăng ký ngay"
-        System.out.println("Nút đăng ký được bấm!");
+    void handleRegister(ActionEvent event) {
+        System.out.println("Chuyển sang màn hình Đăng ký...");
+        SceneManager.switchScene("/client/view/RegisterAccount.fxml");
     }
 
+    // ==========================================
+    // 5. XỬ LÝ SỰ KIỆN: QUÊN MẬT KHẨU
+    // ==========================================
+    @FXML
+    void handleForgotPassword(ActionEvent event) {
+        System.out.println("Mở popup Quên mật khẩu...");
+        // TODO: Hiện một cái Alert (showInfoAlert) bảo là "Tính năng đang phát triển" chẳng hạn
+    }
+    // Hàm trung gian để file xử lý mạng gọi vào
+    public void onLoginFailed(String errorMessage) {
+        showError(errorMessage);
+    }
+
+    // ==========================================
+    // HÀM PHỤ TRỢ: HIỂN THỊ LỖI
+    // ==========================================
     private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: #ff4d4d;");
-        errorLabel.setVisible(true);
+        // Hàm này bắt buộc phải chạy trên luồng giao diện (Platform.runLater)
+        Platform.runLater(() -> {
+            lblMessage.setText(""); // Xóa dòng "Đang kết nối..."
+            errorLabel.setText(message);
+            errorLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;"); // Màu đỏ
+            errorLabel.setVisible(true);
+            btnLogin.setDisable(false); // Mở khóa lại nút Đăng nhập
+        });
     }
 }

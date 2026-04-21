@@ -11,6 +11,7 @@ public enum RequestType {
     HIGHEST_BID_REQUEST,
     AUCTION_ID_REQUEST,
     LOGIN_REQUEST,
+    CREATE_ACCOUNT_REQUEST,
 
     // --- TỪ SERVER TRẢ VỀ CLIENT (Responses & Confirmations) ---
     REGISTRATION_CONFIRMATION,
@@ -21,6 +22,7 @@ public enum RequestType {
     HIGHEST_BID_RESPONSE,
     ERROR_RESPONSE,
     LOGIN_RESPONSE,
+    CREATE_ACCOUNT_RESPONSE,
 
     // --- SERVER CHỦ ĐỘNG THÔNG BÁO (Events / Notifications) ---
     AUCTION_UPDATE_EVENT,
