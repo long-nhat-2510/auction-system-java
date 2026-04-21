@@ -20,6 +20,7 @@ public class DatabaseConnection {
         this.password = config.getProperty("db.password");
 
         try {
+            // Tải tài xế MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("MySQL driver not found", e);

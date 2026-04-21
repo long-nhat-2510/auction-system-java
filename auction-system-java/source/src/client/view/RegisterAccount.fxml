@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Bloom?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<StackPane prefHeight="560" prefWidth="420" style="-fx-background-color: #0c192c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterController">
+
+    <!-- Background -->
+    <VBox alignment="TOP_CENTER" style="-fx-padding: 0;">
+        <Region prefHeight="200" style="-fx-background-color: #283593; -fx-background-radius: 0 0 60% 60%;" />
+    </VBox>
+
+    <!-- Card chính -->
+    <VBox alignment="CENTER" spacing="0" style="-fx-padding: 40 40 32 40;">
+
+        <Label style="-fx-font-size: 52px;" text="\$" textFill="#eaff00">
+         <effect>
+            <DropShadow>
+               <color>
+                  <Color red="1.0" green="1.0" blue="1.0" />
+               </color>
+            </DropShadow>
+         </effect>
+         <font>
+            <Font size="46.0" />
+         </font></Label>
+        <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;" text="AuctionLive">
+         <effect>
+            <Bloom />
+         </effect></Label>
+        <Label alignment="CENTER" prefHeight="18.0" prefWidth="308.0" text="HỆ THỐNG ĐẤU GIÁ TRỰC TUYẾN" textAlignment="CENTER" textFill="#bdc3c7">
+         <font>
+            <Font name="Segoe UI" size="14.0" />
+         </font></Label>
+
+        <!-- Card form -->
+        <VBox prefWidth="396.0" spacing="16" style="-fx-background-color: #0c192c; -fx-background-radius: 14; -fx-padding: 28;">
+            <VBox.margin>
+                <Insets top="30" />
+            </VBox.margin>
+
+            <!-- Server IP + Port -->
+            <HBox spacing="10">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="TẠO TÀI KHOẢN MỚI" textFill="WHITE">
+                  <font>
+                     <Font name="System Bold" size="18.0" />
+                  </font></Label>
+               <Separator prefWidth="200.0" />
+                </VBox>
+                <VBox prefWidth="90" spacing="5" />
+            </HBox>
+
+            <!-- Username -->
+            <VBox spacing="5" style="-fx-background-color: #0c192c;">
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label text="Họ và tên " textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+                 <TextField fx:id="txtName" promptText="Nhập họ và tên..." />
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                      <Label text="Email" textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+                <TextField fx:id="txtEmail" promptText="example@gmail.com" />
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label text="Tên người dùng" textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+            <TextField fx:id="txtUsername" promptText="abc1234" />
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label text="Số điện thoại" textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+            <TextField fx:id="txtNumber" promptText="123456789" />
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                      <Label text="Mật khẩu" textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+                <PasswordField fx:id="txtPassword" promptText="Nhập mật khẩu..." />
+            <TextFlow prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label text="Xác nhận mật khẩu" textFill="WHITE" />
+                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+               </children>
+            </TextFlow>
+            <PasswordField fx:id="txtConfirmPassword" promptText="Nhập lại mật khẩu" />
+            </VBox>
+         <Label fx:id="lblMessage" />
+            <HBox>
+                <children>
+               <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1000.0">
+                  <children>
+                          <CheckBox minWidth="-Infinity" mnemonicParsing="false" text="Tôi đồng ý với" textFill="WHITE" />
+                     <Hyperlink minWidth="-Infinity" prefHeight="24.0" text="Điều khoản dịch vụ" textAlignment="CENTER" />
+                     <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="và" wrappingWidth="12.653518676757812" />
+                     <Hyperlink minWidth="-Infinity" prefHeight="24.0" prefWidth="118.0" text="Chính sách bảo mật" />
+                  </children>
+               </HBox>
+                </children>
+            </HBox>
+
+            <!--LOGIN -->
+            <Button fx:id="btnRegister" maxWidth="Infinity" onAction="#handleRegister" style="-fx-background-color: #00a884; -fx-background-radius: 20;" text="Đăng kí" textFill="#fffcfc" />
+
+            <Separator />
+
+            <!--  REGISTER -->
+            <HBox alignment="CENTER" spacing="5">
+            <TextFlow prefHeight="200.0" prefWidth="200.0" textAlignment="CENTER">
+               <children>
+                      <Label alignment="CENTER" text="Đã có tài khoản?" textFill="WHITE" />
+                      <Hyperlink fx:id="registerLink" onAction="#handleBackToLogin" text="Đăng nhập" />
+            
+                                <Label text="v1.0.0 — Nhóm Auction Java" textFill="#fffdfd" />
+               </children>
+            </TextFlow>
+            </HBox>
+
+        </VBox>
+    </VBox>
+
+</StackPane>
